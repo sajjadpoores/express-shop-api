@@ -1,9 +1,12 @@
+require('dotenv').config()
+
 const express = require('express')
 const router = express.Router()
 
 const UserModel = require('../models/user')
 
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 async function hashPassowrd(password) {
      const salt = await bcrypt.genSalt(10)
@@ -24,8 +27,8 @@ router.post('/login', async (req, res) => {
      if(foundUser) {
           const passwordIsCorrect = await bcrypt.compare(password, foundUser.password)
           if(passwordIsCorrect) {
-               // generate jwt token
-               return res.send('true')
+               const token = jwt.sign({_id: foundUser._id, name: foundUser.name}, process.env.PASSWORD_HASH_KEY)
+               return res.send(token)
           }
      }
      return res.send('false')
