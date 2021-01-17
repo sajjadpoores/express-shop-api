@@ -12,14 +12,16 @@ const userSchema = new mongoose.Schema({
         minlength: 3,
         maxlength: 320,
         required: true,
-        match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+        match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        index: {unique: true, dropDups: true}
     },
     phone: {
         type: String,
         minlength: 11,
         maxlength: 11,
         required: true,
-        match: /09(1[0-9]|3[1-9]|2[1-9])-?[0-9]{3}-?[0-9]{4}/
+        match: /09(1[0-9]|3[1-9]|2[1-9])-?[0-9]{3}-?[0-9]{4}/,
+        index: {unique: true, dropDups: true}
     },
     password: {
         type: String,
