@@ -11,6 +11,12 @@ db.once('open', function() {
   console.log('Connected to Database...')
 });
 
+
+
+const userRouter = require('./routes/user')
+app.use('/user', userRouter)
+
+
 app.listen(process.env.SERVER_PORT, () => {
     console.log(`listening on port ${process.env.SERVER_PORT}...`)
 })
