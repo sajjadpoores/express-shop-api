@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Joi = require('joi');
 const passwordComplexity = require("joi-password-complexity").default;
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -48,6 +47,11 @@ userSchema.pre('save', async function (next)  {
     user.password = await hashPassowrd(user.password);
     next()
 })
+
+userSchema.methods.checkPassword = async function(password, cb) {
+    console.log(password, this.password)
+    return await bcrypt.compare(password, this.password);
+}
 
 function validateUser(user) {
     const complexityOptions = {
