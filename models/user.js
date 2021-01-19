@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 const passwordComplexity = require("joi-password-complexity").default;
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -27,11 +29,25 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        minlength: 60,
+        minlength: 6,
         maxlength: 60,
         required: true
     }
 });
+
+async function hashPassowrd(password) {
+     const salt = await bcrypt.genSalt(10);
+     const hash = await bcrypt.hash(password, salt);
+     return hash;
+}
+
+userSchema.pre('save', async function (next)  {
+    const user = this
+    if (!user.isModified('password')) return next()
+
+    user.password = await hashPassowrd(user.password);
+    next()
+})
 
 function validateUser(user) {
     const complexityOptions = {

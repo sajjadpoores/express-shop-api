@@ -5,28 +5,19 @@ const router = express.Router();
 
 const { UserModel, validateUser } = require('../models/user');
 
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
-async function hashPassowrd(password) {
-     const salt = await bcrypt.genSalt(10);
-     const hash = await bcrypt.hash(password, salt);
-     return hash;
-}
-
 router.post('/register', async (req, res, next) => {
      const userValidation = validateUser(req.body)
      if (userValidation.error) {
           return res.status(400).send(userValidation.error.details.map(detail => detail.message));
      }
 
-     req.body.password = await hashPassowrd(req.body.password);
      const newUser = new UserModel(req.body);
      try {
           await newUser.save();
           return res.send(newUser);
      }
      catch(error) {
+          // console.log(error)
           res.status(500).send('something went wrong!')
      }
 });
