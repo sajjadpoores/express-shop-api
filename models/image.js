@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
-const Joi = require('joi');
+const Joi = require('joi')
+Joi.objectId = require('joi-objectid')(Joi)
 const { Schema } = mongoose
 
 const ImageModel = mongoose.model('image', new Schema ({
