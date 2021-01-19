@@ -31,27 +31,74 @@ const userSchema = new mongoose.Schema({
         minlength: 6,
         maxlength: 60,
         required: true
+    },
+    favoriteProducts: [{
+        type: mongoose.Types.ObjectId,
+        ref: "product",
+    }],
+    favoriteArticles: [{
+        type: mongoose.Types.ObjectId,
+        ref: "article",
+    }],
+    favoriteBlogs: [{
+        type: mongoose.Types.ObjectId,
+        ref: "blog",
+    }],
+    permission: {
+        type: mongoose.Types.ObjectId,
+        ref: "permission",
+        required: true
+    },
+    baskets: [{
+        type: mongoose.Types.ObjectId,
+        ref: "basket"
+    }],
+    avatar: {
+        type: mongoose.Types.ObjectId,
+        ref: "image",
+        required: false,
+        minlength: 3,
+        maxlength: 300
+    },
+    optometry: {
+        type: mongoose.Types.ObjectId,
+        ref: "image",
+        required: false,
+        minlength: 3,
+        maxlength: 300
+    },
+    insurance: {
+        type: mongoose.Types.ObjectId,
+        ref: "image",
+        required: false,
+        minlength: 3,
+        maxlength: 300
+    },
+    isActive: {
+        type: Boolean,
+        required: false,
+        default: true
     }
 });
 
 async function hashPassowrd(password) {
-     const salt = await bcrypt.genSalt(10);
-     const hash = await bcrypt.hash(password, salt);
-     return hash;
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
 }
 
-userSchema.pre('save', async function (next)  {
-    const user = this
-    if (!user.isModified('password')) return next()
+userSchema.pre('save', async function (next) {
+    const user = this;
+    if (!user.isModified('password')) return next();
 
     user.password = await hashPassowrd(user.password);
-    next()
-})
+    next();
+});
 
-userSchema.methods.checkPassword = async function(password, cb) {
-    console.log(password, this.password)
+userSchema.methods.checkPassword = async function (password, cb) {
+    console.log(password, this.password);
     return await bcrypt.compare(password, this.password);
-}
+};
 
 function validateUser(user) {
     const complexityOptions = {
@@ -75,4 +122,4 @@ function validateUser(user) {
 }
 
 const UserModel = mongoose.model('User', userSchema);
-module.exports = { UserModel, validateUser }
+module.exports = { UserModel, validateUser };
