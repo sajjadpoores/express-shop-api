@@ -1,4 +1,6 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const Joi = require('joi');
+const passwordComplexity = require("joi-password-complexity").default;
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -13,7 +15,7 @@ const userSchema = new mongoose.Schema({
         maxlength: 320,
         required: true,
         match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        index: {unique: true, dropDups: true}
+        index: { unique: true, dropDups: true }
     },
     phone: {
         type: String,
@@ -21,7 +23,7 @@ const userSchema = new mongoose.Schema({
         maxlength: 11,
         required: true,
         match: /09(1[0-9]|3[1-9]|2[1-9])-?[0-9]{3}-?[0-9]{4}/,
-        index: {unique: true, dropDups: true}
+        index: { unique: true, dropDups: true }
     },
     password: {
         type: String,
@@ -29,7 +31,28 @@ const userSchema = new mongoose.Schema({
         maxlength: 60,
         required: true
     }
-})
+});
 
-const UserModel = mongoose.model('User', userSchema)
-module.exports = UserModel
+function validateUser(user) {
+    const complexityOptions = {
+        min: 6,
+        max: 30,
+        lowerCase: 1,
+        upperCase: 1,
+        numeric: 1,
+        symbol: 1,
+        requirementCount: 2,
+    };
+
+    const schema = Joi.object({
+        name: Joi.string().min(3).max(100).required(),
+        email: Joi.string().min(3).max(320).required().pattern(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/),
+        phone: Joi.string().min(11).max(11).required().pattern(/09(1[0-9]|3[1-9]|2[1-9])-?[0-9]{3}-?[0-9]{4}/),
+        password: passwordComplexity(complexityOptions).required()
+    });
+
+    return schema.validate(user);
+}
+
+const UserModel = mongoose.model('User', userSchema);
+module.exports = { UserModel, validateUser }
