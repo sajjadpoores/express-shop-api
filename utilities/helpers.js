@@ -12,7 +12,17 @@ function removeFieldFromDocument(document, fields) {
     })
     return documentJson
 }
+
+function extractFieldsFromObject(obj, fields) {
+    let outputObject = {}
+    fields.forEach(field => {
+        outputObject[field] = obj[field]
+    })
+    return outputObject
+}
+
 module.exports = {
     createDefaultPermission,
-    removeFieldFromDocument
+    removeFieldFromDocument,
+    extractFieldsFromObject
 }
