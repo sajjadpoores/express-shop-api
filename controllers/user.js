@@ -27,7 +27,10 @@ module.exports = {
                 const token = jwt.sign({ _id: foundUser._id, name: foundUser.name }, process.env.PASSWORD_HASH_KEY);
                 return res.send(token);
             }
+            else {
+                return res.send(['wrong password'])
+            }
         }
-        return res.send('false');
+        return res.send(['user not found']);
     }
 }
