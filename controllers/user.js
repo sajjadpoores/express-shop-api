@@ -1,17 +1,11 @@
 const { UserModel, validateUser } = require('../models/user');
 const jwt = require('jsonwebtoken')
 const {model: PermissionModel} = require('../models/permission')
-const { createDefaultPermission, removeFieldFromDocument } = require('../utilities/helpers')
+const { createDefaultPermission, removeFieldFromDocument, extractFieldsFromObject } = require('../utilities/helpers')
 module.exports = {
     register: async function (req, res) {
-        const {name, password, email, phone} = req.body
-        const data = {
-            name,
-            password,
-            email,
-            phone
-        }
-
+        const data = extractFieldsFromObject(req.body, ['name', 'password', 'email', 'phone'])
+        
         const userValidation = validateUser(data);
         if (userValidation.error) {
             return res.status(400).send(userValidation.error.details.map(detail => detail.message));
