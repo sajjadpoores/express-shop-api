@@ -1,20 +1,35 @@
 const { UserModel, validateUser } = require('../models/user');
 const jwt = require('jsonwebtoken')
-
+const {model: PermissionModel} = require('../models/permission')
+const { createDefaultPermission, removeFieldFromDocument } = require('../utilities/helpers')
 module.exports = {
     register: async function (req, res) {
-        const userValidation = validateUser(req.body);
+        const {name, password, email, phone} = req.body
+        const data = {
+            name,
+            password,
+            email,
+            phone
+        }
+
+        const userValidation = validateUser(data);
         if (userValidation.error) {
             return res.status(400).send(userValidation.error.details.map(detail => detail.message));
         }
 
-        const newUser = new UserModel(req.body);
+
+        const normalUserPermission = await PermissionModel.findOne({name: 'normal user'})
+        if(!normalUserPermission) {  
+            normalUserPermission = createDefaultPermission()
+        }
+        data.permission = normalUserPermission
+        const newUser = new UserModel(data);
         try {
             await newUser.save();
-            return res.send(newUser);
+            return res.send(removeFieldFromDocument(newUser, ['password']));
         }
         catch (error) {
-            // console.log(error)
+            console.log(error)
             res.status(500).send('something went wrong!');
         }
     },
