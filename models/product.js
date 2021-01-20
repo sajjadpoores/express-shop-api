@@ -17,7 +17,7 @@ const ProductModel = mongoose.model('product', new Schema({
    },
    categories: [{
       type: mongoose.Types.ObjectId,
-      ref: 'category'
+      ref: 'sub-category'
    }],
    properties: [{
       property: [{
