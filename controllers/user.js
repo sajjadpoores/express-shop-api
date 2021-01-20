@@ -29,7 +29,7 @@ module.exports = {
             return res.send(removeFieldFromDocument(newUser, ['password']));
         }
         catch (error) {
-            console.log(error)
+            // console.log(error)
             res.status(500).send('something went wrong!');
         }
     },
