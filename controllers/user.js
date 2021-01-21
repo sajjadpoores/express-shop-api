@@ -41,5 +41,17 @@ module.exports = {
             }
         }
         return res.send(['user not found']);
+    },
+    detail: async function(req, res) {
+        const foundUser = await UserModel.findById(req.params.id)
+        if(foundUser) {
+            return res.send(removeFieldFromDocument(foundUser,['password']))
+        }
+    },
+    getAll: async function (req, res) {
+        const users = await UserModel.find()
+        if(users) {
+            return res.send(users.map(user => removeFieldFromDocument(user, ['password'])))
+        }
     }
 }
