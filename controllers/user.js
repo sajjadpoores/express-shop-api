@@ -47,11 +47,13 @@ module.exports = {
         if(foundUser) {
             return res.send(removeFieldFromDocument(foundUser,['password']))
         }
+        return res.status(404).send(['Could not find user with given ID'])
     },
     getAll: async function (req, res) {
         const users = await UserModel.find()
         if(users) {
             return res.send(users.map(user => removeFieldFromDocument(user, ['password'])))
         }
+        return res.status(500).send(['something went wrong!'])
     }
 }
