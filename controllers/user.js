@@ -1,4 +1,4 @@
-const { UserModel, validateUser } = require('../models/user');
+const { model: UserModel, validate: validateUser } = require('../models/user');
 const jwt = require('jsonwebtoken')
 const {model: PermissionModel} = require('../models/permission')
 const { createDefaultPermission, removeFieldFromDocument, extractFieldsFromObject } = require('../utilities/helpers')
@@ -11,20 +11,33 @@ module.exports = {
             return res.status(400).send(userValidation.error.details.map(detail => detail.message));
         }
 
-
-        const normalUserPermission = await PermissionModel.findOne({name: 'normal user'})
-        if(!normalUserPermission) {  
-            normalUserPermission = createDefaultPermission()
+        if(data.email) {
+            const userExists = await UserModel.findOne({email: data.email})
+            if(userExists) {
+                return res.status(409).send(['An account with such email is already registered'])
+            }
         }
-        data.permission = normalUserPermission
+        
+        if(data.phone) {
+            const userExists = await UserModel.findOne({phone: data.phone})
+            if(userExists) {
+                return res.status(409).send(['An account with such phone is already registered'])
+            }
+        }
+
+        let normalUserPermission = await PermissionModel.findOne({name: 'normal user'})
+        if(!normalUserPermission) {  
+            normalUserPermission = await createDefaultPermission()
+}
+        data.permission = normalUserPermission._id
         const newUser = new UserModel(data);
         try {
             await newUser.save();
             return res.send(removeFieldFromDocument(newUser, ['password']));
         }
         catch (error) {
-            // console.log(error)
-            res.status(500).send('something went wrong!');
+            console.log(error)
+            res.status(500).send(['something went wrong!']);
         }
     },
     login: async function (req, res) {
@@ -44,7 +57,6 @@ module.exports = {
     },
     detail: async function(req, res) {       
         const foundUser = await UserModel.findById(req.params.id)
-
         if(foundUser) {
             return res.send(removeFieldFromDocument(foundUser,['password']))
         }
