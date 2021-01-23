@@ -8,6 +8,6 @@ const permission = require('../middlewares/permission')
 router.post('/register', userController.register)
 router.post('/login', userController.login);
 router.get('/:id',[auth, permission('addUser', true)], userController.detail)
-router.get('/', userController.getAll)
+router.get('/', [auth, permission('addUser')], userController.getAll)
 
 module.exports = router;

@@ -10,7 +10,7 @@ function permission(permissionName, selfAllowed = false) {
     if (requestedUserPermission[permissionName]) return next();
 
     if (selfAllowed) {
-      if (req.user._id === req.params.id) return next()
+      if (req.params.id && req.user._id === req.params.id) return next()
       return res.status(405).send(["you are not allowed!"]);
     }
   };
