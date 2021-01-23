@@ -10,7 +10,7 @@ function auth(req, res, next) {
         jwt.verify(token, process.env.PASSWORD_HASH_KEY, (err, decoded) => {
             if(err) return res.status(401).send(['provided token is not verfied!'])
             req.user = decoded
-            next()
+            return next()
         })
     }
 }
